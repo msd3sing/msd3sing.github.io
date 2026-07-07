@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MS StickerSwap 2026</title>
+    <style>
+        :root {
+            --primary: #8a1538;
+            --primary-hover: #6a102b;
+            --bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --text: #2f3640;
+            --border: #dcdde1;
+            --accent: #4cd137;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 10px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            box-sizing: border-box;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 10px;
+            height: 40px;
+        }
+
+        header h1 {
+            color: var(--primary);
+            margin: 0;
+            font-size: 1.4rem;
+        }
+
+        header p {
+            margin: 2px 0 0 0;
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .container {
+            display: flex;
+            gap: 10px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+            flex: 1;
+            height: calc(100% - 75px);
+        }
+
+        .block {
+            flex: 1;
+            min-width: 280px;
+            background: var(--card-bg);
+            border-radius: 6px;
+            padding: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--bg);
+            padding-bottom: 5px;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: 1.1rem;
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .section-title {
+            font-size: 0.95rem;
+            margin: 8px 0 4px 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .top-controls {
+            position: sticky;
+            top: 0;
+            background: var(--card-bg);
+            z-index: 10;
+            padding-bottom: 2px;
+        }
+
+        .counter-banner {
+            background-color: var(--bg);
+            padding: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-bottom: 6px;
+            text-align: center;
+            border: 1px dashed var(--primary);
+            font-size: 0.8rem;
+        }
+
+        .counter-banner span {
+            color: var(--primary);
+            font-size: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 6px;
+            box-sizing: border-box;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            resize: none;
+            margin-bottom: 6px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn-main {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .btn-main:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .action-buttons-row {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 6px;
+        }
+
+        .btn-action {
+            background-color: #2f3640;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            font-size: 0.78rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            flex: 1;
+            transition: background 0.2s;
+        }
+
+        .btn-action:hover {
+            background-color: #1e2229;
+        }
+
+        .btn-clear {
+            background-color: #7f8c8d;
+        }
+
+        .btn-clear:hover {
+            background-color: #636e72;
+        }
+
+        .btn-copy-all {
+            background-color: #4cd137;
+            color: white;
+            border: none;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+            transition: background 0.2s;
+        }
+
+        .btn-copy-all:hover {
+            background-color: #44bd32;
+        }
+
+        .results-scroll-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding-right: 3px;
+            margin-top: 2px;
+        }
+
+        .country-group {
+            margin-bottom: 6px;
+            background: var(--bg);
+            border-radius: 4px;
+            padding: 5px 6px;
+        }
+
+        .country-title {
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 1px;
+        }
+
+        .stickers-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .sticker-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            border: 1px solid var(--border);
+            cursor: pointer;
+            user-select: none;
+            font-size: 0.78rem;
+            transition: all 0.1s;
+        }
+
+        .sticker-item:hover {
+            border-color: var(--primary);
+        }
+
+        .sticker-item input[type="checkbox"] {
+            margin: 0 3px 0 0;
+            cursor: pointer;
+            width: 12px;
+            height: 12px;
+            accent-color: var(--primary);
+        }
+
+        .sticker-item.checked {
+            background-color: #fff0f3;
+            border-color: var(--primary);
+            font-weight: bold;
+        }
+
+        .no-matches {
+            color: #7f8c8d;
+            font-style: italic;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.8rem;
+        }
+
+        footer {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #7f8c8d;
+            padding: 5px 10px;
+            margin-top: 5px;
+            border-top: 1px solid var(--border);
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        footer a.footer-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 1rem;
+            display: inline-block;
+            vertical-align: middle;
+            margin: 0 6px;
+            transition: color 0.2s;
+        }
+
+        footer a.footer-link:hover {
+            color: var(--primary-hover);
+        }
+
+        .footer-info {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .version-tag {
+            background-color: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>MS StickerSwap</h1>
+        <p>Paste the complete lists from the app to automatically match equivalent changes.</p>
+    </header>
+
+    <div class="container">
+        <div class="block" id="blockA">
+            <div class="block-header">
+                <h2>My Panini List</h2>
+                <button class="btn-main" onclick="compararListas()">Compare</button>
+            </div>
+            
+            <div class="top-controls">
+                <div class="counter-banner">Stickers marked to receive: <span id="countA">0</span></div>
+                <textarea id="txtA" placeholder="Copy Panini list here..."></textarea>
+                
+                <div class="action-buttons-row" id="actionsA" style="display:none;">
+                    <button class="btn-action" id="btnSelectAllA" onclick="seleccionarTodo('resA', 'countA', this)">Select All</button>
+                    <button class="btn-action btn-clear" onclick="limparTodo('resA', 'countA', 'btnSelectAllA')">Clear</button>
+                </div>
+            </div>
+            
+            <div class="section-title" id="titleA">I need this:</div>
+            <div class="results-scroll-area" id="resA"></div>
+        </div>
+
+        <div class="block" id="blockB">
+            <div class="block-header">
+                <h2>List to Compare</h2>
+            </div>
+            
+            <div class="top-controls">
+                <div class="counter-banner">Stickers marked to receive: <span id="countB">0</span></div>
+                <textarea id="txtB" placeholder="Copy Panini list here..."></textarea>
+                
+                <div class="action-buttons-row" id="actionsB" style="display:none;">
+                    <button class="btn-action" id="btnSelectAllB" onclick="seleccionarTodo('resB', 'countB', this)">Select All</button>
+                    <button class="btn-action btn-clear" onclick="limparTodo('resB', 'countB', 'btnSelectAllB')">Clear</button>
+                </div>
+            </div>
+            
+            <div class="section-title" id="titleB">My swaps:</div>
+            <div class="results-scroll-area" id="resB"></div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-info">
+            © MSD3sign 2026 | 
+            <a href="mailto:msd3sing@gmail.com" class="footer-link" title="Contact Email">✉</a> | 
+            <a href="https://www.buymeacoffee.com/msd3sign" target="_blank" class="footer-link" title="Buy me a coffee">☕ Buy me a coffee</a> | 
+            <span>🔒 Client-side only</span> <span class="version-tag">v4.4</span>
+        </div>
+        <button class="btn-copy-all" id="btnCopySelections" onclick="copiarSelecciones()">Copy Selections</button>
+    </footer>
+
+    <script>
+        const banderasPaises = {
+            'FWC_SPECIALS': '🏆', 'FWC_HISTORY': '📜', 'FWC_BALL': '⚽',
+            'ARG': '🇦🇷', 'AUS': '🇦🇺', 'AUT': '🇦🇹', 'BEL': '🇧🇪', 'BRA': '🇧🇷', 
+            'CAN': '🇨🇦', 'CHI': '🇨🇱', 'COL': '🇨🇴', 'CRC': '🇨🇷', 'CRO': '🇭🇷', 
+            'DEN': '🇩🇰', 'ECU': '🇪🇨', 'ENG': 'en', 'ESP': '🇪🇸', 'FRA': '🇫🇷', 
+            'GER': '🇩🇪', 'GHA': '🇬🇭', 'JPN': '🇯🇵', 'KOR': '🇰🇷', 'KSA': '🇸🇦', 
+            'MAR': '🇲🇦', 'MEX': '🇲🇽', 'NED': '🇳🇱', 'PER': '🇵🇪', 'POR': '🇵🇹', 
+            'SEN': '🇸🇳', 'SUI': '🇨🇭', 'TUN': '🇹🇳', 'URU': '🇺🇾', 'USA': '🇺🇸',
+            'ITA': '🇮🇹', 'CMR': '🇨🇲', 'SRB': '🇷🇸', 'SGP': '🇸🇬', 'UKR': '🇺🇦',
+            'RSA': '🇿🇦', 'CZE': '🇨🇿', 'BIH': '🇧🇦', 'QAT': '🇶🇦', 'EGY': '🇪🇬',
+            'IRN': '🇮🇷', 'NZL': '🇳🇿', 'CPV': '🇨🇻', 'PAR': '🇵🇾', 'TUR': '🇹🇷'
+        };
+
+        function obtenerClavePais(rawName) {
+            let name = rawName.toUpperCase().trim();
+            let match = name.match(/^([A-Z0-9]+)/);
+            if (!match) return name;
+            
+            let code = match[1];
+            if (code === 'FWC') {
+                if (name.includes('🏆') || name.includes('SPECIALS')) return 'FWC_SPECIALS';
+                if (name.includes('🌎') || name.includes('📜') || name.includes('HISTORY')) return 'FWC_HISTORY';
+                if (name.includes('BALL')) return 'FWC_BALL';
+            }
+            if (code === 'MOR' || code === 'MAR') return 'MAR';
+            return code;
+        }
+
+        function parsearLista(texto) {
+            const listas = { iNeed: {}, swaps: {} };
+            if (!texto) return listas;
+
+            const lineas = texto.split('\n');
+            let seccionActual = null;
+
+            for (let linea of lineas) {
+                linea = linea.trim();
+                if (!linea) continue;
+
+                if (linea.toLowerCase().includes('i need')) {
+                    seccionActual = 'iNeed';
+                    continue;
+                } else if (linea.toLowerCase().includes('swaps') || linea.toLowerCase().includes('repetidas')) {
+                    seccionActual = 'swaps';
+                    continue;
+                }
+
+                if (!seccionActual) seccionActual = 'iNeed';
+
+                if (linea.includes(':')) {
+                    const partes = linea.split(':');
+                    const paisRaw = partes[0];
+                    const clavePais = obtenerClavePais(paisRaw);
+                    const numerosRaw = partes[1].split(',');
+
+                    if (!listas[seccionActual][clavePais]) {
+                        listas[seccionActual][clavePais] = { info: paisRaw.trim(), numeros: new Set() };
+                    }
+
+                    for (let numToken of numerosRaw) {
+                        numToken = numToken.trim();
+                        if (!numToken) continue;
+                        
+                        const numMatch = numToken.match(/^(\d+)/);
+                        if (numMatch) {
+                            listas[seccionActual][clavePais].numeros.add(parseInt(numMatch[1], 10));
+                        }
+                    }
+                }
+            }
+            return listas;
+        }
+
+        function compararListas() {
+            const dataA = parsearLista(document.getElementById('txtA').value);
+            const dataB = parsearLista(document.getElementById('txtB').value);
+
+            renderizarMacheos(dataA.iNeed, dataB.swaps, 'resA', 'countA', 'actionsA', 'btnSelectAllA');
+            renderizarMacheos(dataB.iNeed, dataA.swaps, 'resB', 'countB', 'actionsB', 'btnSelectAllB');
+        }
+
+        function renderizarMacheos(necesidades, repetidasDelOtro, idContenedor, idContador, idActionsRow, idBtnSelectAll) {
+            const contenedor = document.getElementById(idContenedor);
+            const actionsRow = document.getElementById(idActionsRow);
+            const btnSelectAll = document.getElementById(idBtnSelectAll);
+            contenedor.innerHTML = '';
+            document.getElementById(idContador).innerText = '0';
+
+            let totalMatches = 0;
+
+            for (const clave in necesidades) {
+                if (repetidasDelOtro[clave]) {
+                    const numerosNecesitados = necesidades[clave].numeros;
+                    const numerosRepetidosOtro = repetidasDelOtro[clave].numeros;
+                    const comunes = [...numerosNecesitados].filter(n => numerosRepetidosOtro.has(n)).sort((a, b) => a - b);
+
+                    if (comunes.length > 0) {
+                        totalMatches += comunes.length;
+
+                        let nombreLimpio = clave; 
+                        if (necesidades[clave].info.includes('-')) {
+                            nombreLimpio = necesidades[clave].info.split('-')[0].trim();
+                        } else {
+                            nombreLimpio = necesidades[clave].info.replace(/[^a-zA-Z0-9 ]/g, '').trim();
+                        }
+                        
+                        const bandera = banderasPaises[clave] ? ` ${banderasPaises[clave]}` : '';
+                        const tituloMostrar = `${nombreLimpio}${bandera}`;
+
+                        const groupDiv = document.createElement('div');
+                        groupDiv.className = 'country-group';
+                        groupDiv.setAttribute('data-country-code', clave);
+
+                        const titleDiv = document.createElement('div');
+                        titleDiv.className = 'country-title';
+                        titleDiv.innerHTML = `<span>${tituloMostrar}</span> <span>(${comunes.length})</span>`;
+                        groupDiv.appendChild(titleDiv);
+
+                        const gridDiv = document.createElement('div');
+                        gridDiv.className = 'stickers-grid';
+
+                        comunes.forEach(num => {
+                            const itemLabel = document.createElement('label');
+                            itemLabel.className = 'sticker-item';
+
+                            const checkbox = document.createElement('input');
+                            checkbox.type = 'checkbox';
+                            checkbox.onchange = function() {
+                                if (this.checked) {
+                                    itemLabel.classList.add('checked');
+                                } else {
+                                    itemLabel.classList.remove('checked');
+                                }
+                                actualizarContador(idContenedor, idContador);
+                            };
+
+                            itemLabel.appendChild(checkbox);
+                            itemLabel.appendChild(document.createTextNode(num === 0 ? '00' : num));
+                            gridDiv.appendChild(itemLabel);
+                        });
+
+                        groupDiv.appendChild(gridDiv);
+                        contenedor.appendChild(groupDiv);
+                    }
+                }
+            }
+
+            if (totalMatches === 0) {
+                contenedor.innerHTML = '<div class="no-matches">No matching stickers found.</div>';
+                actionsRow.style.display = 'none';
+            } else {
+                actionsRow.style.display = 'flex';
+                btnSelectAll.innerText = "Select All";
+            }
+        }
+
+        function seleccionarTodo(idContenedor, idContador, boton) {
+            const contenedor = document.getElementById(idContenedor);
+            const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
+            const algunDeseleccionado = [...checkboxes].some(cb => !cb.checked);
+            
+            checkboxes.forEach(cb => {
+                cb.checked = algunDeseleccionado;
+                const label = cb.parentElement;
+                if (algunDeseleccionado) {
+                    label.classList.add('checked');
+                } else {
+                    label.classList.remove('checked');
+                }
+            });
+
+            boton.innerText = algunDeseleccionado ? "Deselect All" : "Select All";
+            actualizarContador(idContenedor, idContador);
+        }
+
+        function limparTodo(idContenedor, idContador, idBtnSelectAll) {
+            const contenedor = document.getElementById(idContenedor);
+            const checkboxes = contenedor.querySelectorAll('input[type="checkbox"]');
+            
+            checkboxes.forEach(cb => {
+                cb.checked = false;
+                cb.parentElement.classList.remove('checked');
+            });
+
+            document.getElementById(idBtnSelectAll).innerText = "Select All";
+            actualizarContador(idContenedor, idContador);
+        }
+
+        function actualizarContador(idContenedor, idContador) {
+            const contenedor = document.getElementById(idContenedor);
+            const checkboxesMarcados = contenedor.querySelectorAll('input[type="checkbox"]:checked');
+            document.getElementById(idContador).innerText = checkboxesMarcados.length;
+        }
+
+        function construirTextoBloque(idContenedor) {
+            const contenedor = document.getElementById(idContenedor);
+            const grupos = contenedor.querySelectorAll('.country-group');
+            let resultado = '';
+
+            grupos.forEach(grupo => {
+                const codigoPais = grupo.getAttribute('data-country-code');
+                const checkboxesMarcados = grupo.querySelectorAll('input[type="checkbox"]:checked');
+                
+                if (checkboxesMarcados.length > 0) {
+                    const numeros = [];
+                    checkboxesMarcados.forEach(cb => {
+                        numeros.push(cb.parentElement.textContent.trim());
+                    });
+                    resultado += `${codigoPais}: ${numeros.join(', ')}\n`;
+                }
+            });
+
+            return resultado;
+        }
+
+        function copiarSelecciones() {
+            const textoA = construirTextoBloque('resA');
+            const textoB = construirTextoBloque('resB');
+            
+            let textoFinal = '';
+
+            if (textoA) {
+                textoFinal += 'I need this:\n' + textoA + '\n';
+            }
+            if (textoB) {
+                textoFinal += 'My swaps:\n' + textoB;
+            }
+
+            textoFinal = textoFinal.trim();
+
+            if (!textoFinal) {
+                alert('No stickers selected to copy!');
+                return;
+            }
+
+            navigator.clipboard.writeText(textoFinal).then(() => {
+                const btn = document.getElementById('btnCopySelections');
+                const textoOriginal = btn.innerText;
+                btn.innerText = 'Copied! ✓';
+                btn.style.backgroundColor = '#2f3640';
+                
+                setTimeout(() => {
+                    btn.innerText = textoOriginal;
+                    btn.style.backgroundColor = '#4cd137';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error copying text: ', err);
+                alert('Failed to copy to clipboard.');
+            });
+        }
+    </script>
+</body>
+</html>
