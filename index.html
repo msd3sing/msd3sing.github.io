@@ -21,7 +21,7 @@
             color: var(--text);
             margin: 0;
             padding: 10px;
-            overflow: hidden;
+            overflow: auto;
             display: flex;
             flex-direction: column;
             height: 100vh;
@@ -48,16 +48,18 @@
 
         .container {
             display: flex;
+            flex-direction: column;
             gap: 10px;
             max-width: 1600px;
             margin: 0 auto;
             width: 100%;
             flex: 1;
             height: calc(100% - 75px);
+            padding-bottom: 90px; /* espacio seguro para el footer */
         }
+		
 
         .block {
-            flex: 1;
             min-width: 280px;
             background: var(--card-bg);
             border-radius: 6px;
@@ -66,8 +68,44 @@
             border: 1px solid var(--border);
             display: flex;
             flex-direction: column;
-            height: 100%;
+            height: auto;
             box-sizing: border-box;
+        }
+
+        /* Top full-width block should not expand vertically and buttons size to content */
+        #blockBotton {
+            flex: 0 0 auto;
+            width: 100%;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-content: flex-start; /* start items, we'll push right with margin-left:auto */
+            flex-direction: row; /* override .block's column */
+            box-sizing: border-box;
+            padding: 8px 10px;
+            flex-wrap: nowrap;
+        }
+
+        #blockBotton .btn-main,
+        #blockBotton .btn-copy-all {
+            align-self: center;
+            width: auto;
+            display: inline-block;
+        }
+
+        /* Two-column row that holds blocks A and B */
+        .two-column-row {
+            display: flex;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-height: 0; /* allow children to shrink inside flex */
+        }
+
+        .two-column-row .block {
+            flex: 1 1 0;
+            min-height: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .block-header {
@@ -190,7 +228,6 @@
             font-weight: bold;
             border-radius: 4px;
             cursor: pointer;
-            margin-left: 10px;
             transition: background 0.2s;
         }
 
@@ -198,11 +235,33 @@
             background-color: #44bd32;
         }
 
+        /* left and right wrappers inside top block */
+        #blockBotton .bb-left,
+        #blockBotton .bb-right {
+            display: flex;
+            align-items: center;
+        }
+
+        #blockBotton .bb-left {
+            justify-content: flex-start;
+        }
+
+        #blockBotton .bb-right {
+            justify-content: flex-end;
+            margin-left: auto; /* push this wrapper to the right */
+        }
+
         .results-scroll-area {
-            flex-grow: 1;
+            flex: 1 1 auto;
+            min-height: 0;
             overflow-y: auto;
             padding-right: 3px;
             margin-top: 2px;
+        }
+
+        /* ensure container and body flex children can shrink so footer isn't covered */
+        .container {
+            min-height: 0;
         }
 
         .country-group {
@@ -273,11 +332,18 @@
             align-items: center;
             font-size: 0.75rem;
             color: #7f8c8d;
-            padding: 5px 10px;
-            margin-top: 5px;
+            padding: 8px 12px;
             border-top: 1px solid var(--border);
             width: 100%;
             box-sizing: border-box;
+            background-color: var(--bg);
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 48px;
+            z-index: 999; /* asegurar que el footer esté encima del contenido */
+            box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
         }
 
         footer a.footer-link {
@@ -308,6 +374,46 @@
             font-size: 0.7rem;
             margin-left: 5px;
         }
+        
+        /* Responsive: mobile adjustments */
+        @media (max-width: 700px) {
+            .container {
+                padding-bottom: 100px; /* ensure space for fixed footer */
+            }
+
+            .two-column-row {
+                flex-direction: column;
+            }
+
+            #blockBotton {
+                padding: 6px 8px;
+                gap: 8px;
+                justify-content: space-between;
+            }
+
+            #blockBotton .bb-right {
+                margin-left: 0;
+            }
+
+            .btn-main, .btn-copy-all {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+            }
+
+            textarea {
+                height: 60px;
+            }
+
+            .results-scroll-area {
+                max-height: calc(100vh - 300px);
+            }
+
+            footer {
+                height: 44px;
+                padding: 6px 10px;
+                font-size: 0.7rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -315,13 +421,26 @@
     <header>
         <h1>MS StickerSwap</h1>
         <p>Paste the complete lists from the app to automatically match equivalent changes.</p>
-    </header>
-
+    </header>		
+			
+			
+	
+	
     <div class="container">
+        <div class="block" id="blockBotton">
+            <div class="bb-left">
+                <button class="btn-main" onclick="compararListas()">Compare</button>
+            </div>
+            <div class="bb-right">
+                <button class="btn-copy-all" id="btnCopySelections" onclick="copiarSelecciones()">Copy Selections</button>
+            </div>
+        </div>
+
+        <div class="two-column-row">
         <div class="block" id="blockA">
             <div class="block-header">
                 <h2>My Panini List</h2>
-                <button class="btn-main" onclick="compararListas()">Compare</button>
+                
             </div>
             
             <div class="top-controls">
@@ -356,6 +475,7 @@
             <div class="section-title" id="titleB">My swaps:</div>
             <div class="results-scroll-area" id="resB"></div>
         </div>
+        </div>
     </div>
 
     <footer>
@@ -363,9 +483,9 @@
             © MSD3sign 2026 | 
             <a href="mailto:msd3sing@gmail.com" class="footer-link" title="Contact Email">✉</a> | 
             <a href="https://www.buymeacoffee.com/msd3sign" target="_blank" class="footer-link" title="Buy me a coffee">☕ Buy me a coffee</a> | 
-            <span>🔒 Client-side only</span> <span class="version-tag">v4.4</span>
+            <span>🔒 Client-side only</span> <span class="version-tag">v4.5</span>
         </div>
-        <button class="btn-copy-all" id="btnCopySelections" onclick="copiarSelecciones()">Copy Selections</button>
+        
     </footer>
 
     <script>
